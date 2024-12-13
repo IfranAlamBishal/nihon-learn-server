@@ -38,7 +38,7 @@ async function run() {
             res.send(lessons);
         });
 
-        app.get("/users", async(req,res) => {
+        app.get("/users", async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
         });
@@ -49,10 +49,10 @@ async function run() {
             const user = await userCollection.findOne(query);
             let admin = false;
             if (user) {
-              admin = user.role === 'admin';
+                admin = user.role === 'admin';
             }
             res.send({ admin });
-          });
+        });
 
 
         // Post Operations
@@ -60,6 +60,21 @@ async function run() {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
+        });
+
+        // Put Oparetions
+        app.put("/update_role", async (req, res) => {
+            const { userId, newRole } = req.body;
+
+            if (userId && newRole) {
+                const id = { _id: new ObjectId(userId) };
+                const updatedRole = {
+                    $set: { role: newRole },
+                };
+
+                const result = await userCollection.updateOne(id, updatedRole);
+                res.send(result);
+            }
         });
 
 
